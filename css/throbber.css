@@ -1,0 +1,25 @@
+.progress-disabled {
+  float: none;
+  display:inline;
+}
+
+.ajax-progress {
+  float: none;
+  display:inline;
+}
+
+.ajax-progress .throbber {  
+  float: none;
+  height: 11px;
+  margin: 2px;
+  width: 11px;
+  display:inline-block;
+}
+
+tr .ajax-progress .throbber {
+  margin: 0 2px;
+}
+
+.ajax-progress-bar {
+  width: 16em;
+}

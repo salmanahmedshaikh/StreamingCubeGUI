@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>   
+	<!--<meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>-->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+	<title>Streaming Cube</title>	
+	
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="css/streamOLAPGUI.css"> 
+	<link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	<script src="scripts/jquery-3.1.1.js"></script>	
+	
+</head>
+  
+<body class="w3-light-grey" onload="initializeSubmitQuery();">
+<!-- Top container --> 
+<div style="width:100%; display:table; position:fixed; clear: left;">
+	<div style="display:table-row;" >
+		<div id="menu-top" style="width:85%; display:table-cell;">
+			<ul>			  
+			  <li><a class="active" href="#secSubmitQuery">Query</a></li>			  
+			  <li><a href="#secOLAPAnalysis">OLAP</a></li>
+			  <li><a href="#secHelp">Help</a></li>
+		</div>
+		<div style="width:15%; display:table-cell; background-color: #333; vertical-align:middle; color: white;">
+			<span class="w3-left logoHeadItalic">Streaming</span><span class="w3-left logoHeadNormal">Cube</span>
+			<!--<span class="w3-left ">StreamCube</span>-->
+		</div>
+	</div>
+</div>
+<br><br>
+<!-- Body Submit Query-->
+<section id="secSubmitQuery" style="width: 100%; height:95%;">
+<div style="width:100%; height:100%; display:table; ">
+	<div style="display:table-row; height:30%;" >
+		<div id="divSubmitQuery" style="display:table-cell; width:50%;" >			
+			<table style="width:100%; height:50%;" cellspacing="10px" cellpadding="3px" border=0px>			
+				<tr>
+					<td align="left" style="width:30%; height:10%;"><label id="lblJsSpinnerStatusHead" class="sideHeading">Server Status:</label></td>
+					<td align="left" style="width:50%;"><label id="lblJsSpinnerStatusVal" class="sideHeading" style="color:red;">Server not available!</label></td>
+					<td align="right" style="width:20%;"><button id="btnRefresh" onclick="refreshBrowser()" class="w3-btn w3-light-grey" style="border: 1px solid #AAA; width:90%">Refresh</button></td>
+				</tr>
+				<tr>
+					<td align="left" style="vertical-align: bottom;"><label id="lblJSONQuery" class="sideHeading">Select or Type Query:</label></td>
+					<td align="left" colspan=2 rowspan=2><textarea id="queryTextArea" onblur="setbg('white')" rows="10" cols="60" ></textarea></td>
+				</tr>
+				<tr>
+					<td align="left" style="vertical-align: top;">
+						<select name="queryList"  id="queryList" onchange="selectQuery()" style="width:100%"> 
+								<option value="syntheticDataQuery" selected>Synthetic Data</option> 
+								<option value="TPCHDataQuery">TPC-H Data</option> 								
+								<option value="typeQuery">Insert Query</option> 								
+						</select>
+					</td>
+				</tr>
+				<!--
+				<tr>
+					<td></td>
+					<td align="left" style="width:50%;"><label id="lblJSONQueryStatusVal" class="sideHeading" style="color:red;">No Query in Execution!</label></td>
+					<td align="right"><button id="btnSubmitQuery" onclick="submitQuery()" class="w3-btn w3-light-grey" style="border: 1px solid #AAA; width:90%">Submit Query</button></td>
+				</tr>
+				-->
+			</table>
+		</div>
+		
+		<div id="divOLAPLattice" style="display:table-cell; width:50%;" >			
+			<table style="width:100%; height:99%" cellspacing="10px" cellpadding="3px" border=0px>
+				<tr>
+					<td align="left" style="width:20%; height:10%;"><label id="lblLatticeInfoHead" class="sideHeading">Lattice Info:</label></td>					
+					<td align="right" style="height:10%;" ><button hidden id="btnGetLatticeWithInfo" value="" onclick="getLatticeWithInfo()">Get Lattice Info</button></td>
+				</tr>
+				<tr align="center">	
+					<!--<td></td>-->
+					<td colspan=2><div id="divOLAPLatticeTable" style="width:100%; height:100%; display:table-cell; overflow:auto; float:right; "></div></td>
+				</tr>
+			</table>			
+		</div>
+	</div>	
+	
+	<div style="display:table-row; height:70%; vertical-align: top;" >
+		<div id="" style="display:table-cell; width:50%; vertical-align: top;" >
+			<table style="width:100%; height:100%;" cellspacing="10px" cellpadding="3px" border=0px>					
+				
+				<tr style="width:100%; vertical-align: top;">
+					<td style="width:30%; height:10%;" ><label id="lblConfigFileHead" class="sideHeading">Configuration File:</label></td>
+					<td align="left" colspan=3><textarea id="configFileTextArea" onblur="setbg('white')" rows="10" cols="60" ></textarea></td>
+				</tr>
+				
+				<tr style="width:100%; vertical-align: top;">
+					<td style="width:30%;" >					
+					<td align="left" style="width:30%;">
+						<label id="lblJSONQueryStatusVal" class="sideHeading" style="color:red;">No Query in Execution!</label>						
+					</td>
+					<td align="right" style="width:20%;"></td>
+					<td align="right" style="width:20%;">						
+						<!--<button id="btnStopQuery" onclick="stopQuery()" class="w3-btn w3-light-grey" style="border: 1px solid #AAA; width:90%">Stop Query</button>-->
+						<button id="btnSubmitQuery" onclick="submitQuery()" class="w3-btn w3-light-grey" style="border: 1px solid #AAA; width:90%;">Submit Query</button>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="divQueryStats" style="display:table-cell; width:50%; height:100%; vertical-align: top;" >
+			<table style="width:100%; height:100%;" cellspacing="10px" cellpadding="3px" border=0px>			
+				<!--
+				<tr>
+					<td align="left" style="width:30%; height:5%;"><label id="lblQueriedNode" class="sideHeading">Queried Node:</label></td>
+					<td align="left" style="width:70%; height:5%;"><label id="lblQueriedNodeVal" class="sideHeading" style="color: #08298A;" ></label></td>
+				</tr>
+				<tr>
+					<td align="left" style="width:30%; height:5%;"><label id="lblQueryAnsweringNode" class="sideHeading">Query Answering Node:</label></td>
+					<td align="left" style="width:70%; height:5%;"><label id="lblQueryAnsweringNodeVal" class="sideHeading" style="color: #08298A;"></label></td>
+				</tr>
+				<tr>
+					<td align="left" style="width:30%; height:5%;"><label id="lblQueryAnsweringTime" class="sideHeading">Query Answering Time:</label></td>
+					<td align="left" style="width:70%; height:5%;"><label id="lblQueryAnsweringTimeVal" class="sideHeading" style="color: #08298A;"></label></td>
+				</tr>
+				-->
+				<tr>					
+					<td style="height:45%;"><div id="divQueryAnsweringNode" style="width:100%; height:100%; display:table-cell; float:left;"></div></td>					
+				</tr>
+				<tr>					
+					<td style="height:45%;"><div id="divQueryAnsweringTimeChart" style="width:100%; height:100%; display:table-cell; float:left;"></div></td>					
+				</tr>
+				<tr><td style="height:10%;"></td></tr>
+			</table>
+		</div>
+	</div>
+</div>
+</section>
+
+<br><br>
+
+
+<!-- Body OLAP Analysis-->
+<section id="secOLAPAnalysis" style="width: 100%; height:95%;">
+<div id="divMain" class=blackBorder style="width: 100%; height:100%; display: table;">
+
+	<!-- Top Menu Bar-->
+	<div id= "divMenuBar" style="display:table-row; height:7%;" >
+		<div id="throbberDiv" style="width:15%; display:table-cell; vertical-align:middle; border-style: groove; border-width: 0px 5px 5px 0px;">
+		<table cellspacing="0px" cellpadding="5px" border=0px>
+			<tr>
+				<td><img src="images/kdelogo.gif" alt="KDE Logo" height="45px" width="65px"></td>
+				<td><span class="w3-left logoHeadItalic" style="color:red">KDE Lab</span></td>
+			<tr>
+		</table>
+		</div>		
+		<div id="tools"  style="width:85%; display:table-cell; vertical-align:middle; border-style: groove; border-width: 0px 0px 5px 0px;">	
+			<table style="width:100%;" cellspacing="0" cellpadding="3px">			
+			  <tr>
+				<!--
+				<td width = "15%"><label id="lblQueryIDHeading" class=labelHeading>SPE Query</label>&nbsp;<select name="queryID"  id="queryID" style="width:50%;"> 
+								<option value="0" selected>1</option> 					
+							</select>
+				</td>
+				-->
+				<td width = "10%"><label id="lblLatticeNodeHeading" class=labelHeading>Query Dimensions</label>&nbsp;</td>
+				<td width = "45%" height = "0%" valign="top">									
+					<div id="divLatticeDimensions" style="height:0%; vertical-align:top; padding-top: 0px;" />					
+				</td>				
+				<td><select name="latticeNodeList"  id="latticeNodeList" style="width:75%; display:none"></select></td>
+				<td width = "15%"><label id="lblAggrOpHeading" class=labelHeading>Operation</label>&nbsp;<select name="aggrOpList"  id="aggrOpList" style="width:50%"> 
+								<option value="sum" selected>SUM</option> 
+								<option value="min">MIN</option> 								
+								<option value="max">MAX</option> 								
+							</select>
+				</td>			
+				<td width = "15%"><label id="lblTimeGrainHeading" class=labelHeading>Time Grain</label>&nbsp;<select name="timeGrainList"  id="timeGrainList" style="width:50%"> 
+								<option value="second" selected>Second</option> 
+								<option value="minute">Minute</option> 								
+								<option value="hour">Hour</option> 								
+							</select>
+				</td>			
+				<td width = "5%"><button id="btnSubmit" onclick="executeQuery(this.id)" class="w3-btn w3-light-grey" style="border: 1px solid #AAA; width: 90%;"><i class="fa fa-play"></i></button></td>
+				<td width = "5%"><button id="btnPause" onclick="executePause()" class="w3-btn w3-light-grey" style="border: 1px solid #AAA; width: 90%;"><i class="fa fa-pause"></i></button></td>
+				<td width = "5%"><button id="btnStop" onClick="executeStop()" class="w3-btn w3-light-grey" style="border: 1px solid #AAA; width: 90%;"><i class="fa fa-stop"></i></button></td>
+			  </tr>
+			</table>			
+		</div>				
+		
+	</div>	
+	
+	<!-- Main Body -->
+	<div id="divBody" style="display: table-row; height:95%;">				
+		
+		<!-- OLAP Operations left bar -->
+		<div id="divOLAPOperations" style="width:15%; height:100%; overflow:scroll; display:table-cell; vertical-align: top; border-style: groove; border-width: 0px 5px 0px 0px;">
+			<table style="width:100%;" cellspacing="0" cellpadding="3px">			
+				<tr>
+					<td width = "15%" align="center">
+						<label id="lblOLAPOperations" class="sideHeading">OLAP Operations</label>
+					</td>
+				</tr>
+				<tr>
+					<!--<td width = "20%"><label id="lblDrillDownHeading" class=labelHeading>Drilldown</label>&nbsp;</td>-->
+					<td width = "15%">
+						<select name="drilldownList"  id="drilldownList" onchange="executeQuery(this.id)" style="width:99%">
+							<option value="drilldownListDefault" selected>Drilldown</option>
+						</select>
+					</td>
+				</tr>
+				<tr>					
+					<td width = "15%">
+						<select name="rollupList"  id="rollupList" onchange="executeQuery(this.id)" style="width:99%">
+							<option value="rollupListDefault" selected>Rollup</option>
+						</select>
+					</td>
+				</tr>
+				<tr>					
+					<td width = "15%">
+						<select name="OLAPOpTimeGrainList"  id="OLAPOpTimeGrainList" onchange="executeQuery(this.id)" style="width:99%">
+							<option value="OLAPOpTimeGrainListDefault" selected>Time Grain</option>
+							<option value="second">Second</option> 
+							<option value="minute">Minute</option> 								
+							<option value="hour">Hour</option>
+						</select>
+					</td>
+				</tr>				
+				<tr>
+					<td>
+						<br \>
+					</td>
+				</tr>
+				<tr>
+					<td width = "15%" align="center">
+						<label id="lblOLAPOperations" class="sideHeading">Live Stats (IoI)</label>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<label id="lblResultTimestampHead" class=labelHeading>Result Timestamp:</label>
+					</td>					
+				</tr>
+				<tr>
+					<td  align="right">
+						<label id="lblResultTimestampVal" class=labelValue />
+					</td>					
+				</tr>
+				<tr>
+					<td>
+						<label id="lblTotalSalesQtyIoIHead" class=labelHeading>Total Sales Qty:</label>
+					</td>					
+				</tr>
+				<tr>
+					<td  align="right">
+						<label id="lblTotalSalesQtyIoIVal" class=labelValue />
+					</td>					
+				</tr>
+				<tr>
+					<td>
+						<label id="lblBestSellerDimHead" class=labelHeading>Best Seller Dim:</label>
+					</td>					
+				</tr>
+				<tr>
+					<td  align="right">
+						<!--<label id="lblBestSellerDimVal" class=labelValue />-->
+						<textarea readonly id="lblBestSellerDimVal" class="leftPanTextArea"></textarea> 
+					</td>					
+				</tr>
+				<tr>
+					<td>
+						<label id="lblBestSellerQtyHead" class=labelHeading>Best Seller Qty:</label>
+					</td>					
+				</tr>
+				<tr>
+					<td  align="right">
+						<label id="lblBestSellerQtyVal" class=labelValue />						
+					</td>					
+				</tr>
+				<tr>
+					<td>
+						<label id="lblWorstSellerDimHead" class=labelHeading>Worst Seller Dim:</label>
+					</td>					
+				</tr>
+				<tr>
+					<td  align="right">
+						<!--<label id="lblWorstSellerDimVal" class=labelValue />-->
+						<textarea readonly id="lblWorstSellerDimVal" class="leftPanTextArea"></textarea> 
+					</td>					
+				</tr>
+				<tr>
+					<td>
+						<label id="lblWorstSellerQtyHead" class=labelHeading>Worst Seller Qty:</label>
+					</td>					
+				</tr>
+				<tr>
+					<td align="right">
+						<label id="lblWorstSellerQtyVal" class=labelValue />
+					</td>					
+				</tr>
+			</table>
+		</div>		
+		
+		<!-- Right body of OLAP Operations -->
+		<div id="divDisplay" style="width:80%; height:100%; display:table-cell; ">		
+			<table style="width:100%; height:100%;" cellspacing="0" cellpadding="3px">
+				<tr>
+					<td height = "50%" width = "50%"><div id="divTable" style="width:100%; height:100%; display:table-cell; overflow:scroll; float:left;"></div></td>
+					<td height = "50%" width = "50%">
+						<div id="divChartButtons" style="width:100%; height:10%; display:table-cell; overflow:auto; float:left;">						
+							<button id="btnBar" value="bar" onclick="changeChartType(this)" class="w3-btn w3-light-grey" style="border: 1px solid #AAA; width: 15%;">Bar</button>
+							<button id="btnColumn" value="column" onclick="changeChartType(this)" class="w3-btn w3-light-grey" style="border: 1px solid #AAA; width: 15%;">Column</button>
+							<button id="btnArea" value="area" onclick="changeChartType(this)" class="w3-btn w3-light-grey" style="border: 1px solid #AAA; width: 15%;">Area</button>
+							<button id="btnSpline" value="spline" onclick="changeChartType(this)" class="w3-btn w3-light-grey" style="border: 1px solid #AAA; width: 15%;">Spline</button>
+							<button id="btnPie" value="pie" onclick="changeChartType(this)" class="w3-btn w3-light-grey" style="border: 1px solid #AAA; width: 15%;">Pie</button>
+							<button id="btnDoughnut" value="doughnut" onclick="changeChartType(this)" class="w3-btn w3-light-grey" style="border: 1px solid #AAA; width: 15%;">Doughnut</button>							
+						</div>
+						<div id="divSimpleChart" style="width:100%; height:90%; display:table-cell; overflow:scroll; float:left;"></div>
+					</td>
+				</tr>			
+				<tr>					
+					<td height = "50%"><div id="divSummaryWRTTimeChart" style="width:100%; height:100%; display:table-cell; overflow:scroll; float:left; "></div></td>					
+					<td height = "50%"><div id="divTimeSeriesChart" style="width:100%; height:100%; display:table-cell; overflow:scroll; float:left;"></div></td>
+				</tr>
+			</table>			
+		</div>			
+	</div>			
+</div>
+</section>
+<br><br>
+<section id="secHelp" style="width: 100%; height:96%;">
+	<div id="divHelp"  style="width:100%; height:100%; display:table; ">
+	<br><br>
+	Currently No Help Available!
+	</div>
+</section>
+
+
+
+<script src="scripts/graphs.js" type ="text/javascript"></script>   
+<script src="scripts/table.js" type ="text/javascript"></script>   
+<script src="scripts/common.js" type ="text/javascript"></script>   
+<script src="scripts/canvasjs-1.7.0/canvasjs.min.js" type="text/javascript"></script>
+<script src="scripts/throbber.js" type ="text/javascript"></script>
+
+</body>
+</html>
