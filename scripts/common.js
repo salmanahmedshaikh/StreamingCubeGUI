@@ -5,7 +5,8 @@
  * Date created: 16th November, 2016
  *
  */
- 
+
+// Test Comment
 // Global variables
 var periodicQueryExecutionID;
 var callbackArgumentGlobal;
